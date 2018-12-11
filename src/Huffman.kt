@@ -1,16 +1,18 @@
 object Huffman {
 
-    fun getCodeTable(text: String): List<Pair<Char, String>> {
+    fun getCodeTable(bytes: ByteArray) = getCodeTable(bytes.toList())
 
-        val pairs = text.groupingBy { it }.eachCount().toList().sortedByDescending { (_, value) -> value }
+    fun getCodeTable(bytes: List<Byte>): List<Pair<Byte, String>> {
+
+        val pairs = bytes.groupingBy { it }.eachCount().toList().sortedByDescending { (_, value) -> value }
         val nodes = pairs.map {
-            val probability = it.second / text.length.toFloat()
+            val probability = it.second / bytes.size.toFloat()
             Node(it.first, probability)
         }
 
         generateTree(nodes)
         return nodes.map {
-            Pair(it.char!!, buildBinary(it))
+            Pair(it.byte!!, buildBinary(it))
         }
     }
 

@@ -1,30 +1,30 @@
 object Compressor {
 
     interface ICompressor {
-        fun compress(text: String): String
-        fun decompress(binaryString: String): String
+        fun compress(bytes: ByteArray): String
+        fun decompress(binaryString: String): ByteArray
     }
 
-    fun with(codeTable: List<Pair<Char, String>>): ICompressor {
+    fun with(codeTable: List<Pair<Byte, String>>): ICompressor {
         return object : ICompressor {
 
-            override fun compress(text: String): String {
+            override fun compress(bytes: ByteArray): String {
                 val builder = StringBuilder()
-                text.forEach { char ->
-                    val code = codeTable.find { char == it.first }?.second
+                bytes.forEach { byte ->
+                    val code = codeTable.find { byte == it.first }?.second
                     code?.let {
                         builder.append(it)
-                    } ?: IllegalArgumentException("Character not present in code table: $char")
+                    } ?: IllegalArgumentException("Byte not present in code table: $byte")
                 }
                 return builder.toString()
             }
 
-            override fun decompress(binaryString: String): String {
+            override fun decompress(binaryString: String): ByteArray {
 
                 val sortedCodeTable = codeTable.sortedByDescending { it.second.length }
                 val bitList = binaryString.toCharArray().toMutableList()
 
-                val builder = StringBuilder()
+                val outputBytes = mutableListOf<Byte>()
 
                 while (bitList.size > 0) {
 
@@ -33,11 +33,11 @@ object Compressor {
                     }
 
                     matched?.let {
-                        builder.append(it.first)
+                        outputBytes.add(it.first)
                         repeat(it.second.length) { bitList.removeAt(0) }
                     } ?: IllegalArgumentException("Unrecognized code")
                 }
-                return builder.toString()
+                return outputBytes.toByteArray()
             }
         }
     }

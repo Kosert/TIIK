@@ -1,6 +1,6 @@
 data class Node
 @JvmOverloads constructor(
-        val char: Char? = null,
+        val byte: Byte? = null,
         val probability: Float
 ) {
     var parent: Node? = null
@@ -18,6 +18,6 @@ data class Node
             value?.parent = this
         }
 
-    fun isLeftChild() = parent?.leftChild == this
-    fun isRightChild() = parent?.rightChild == this
+    fun isLeftChild() = parent?.leftChild === this
+    fun isRightChild() = parent?.rightChild === this
 }
